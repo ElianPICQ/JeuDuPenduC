@@ -1,75 +1,17 @@
 #include "pendu.h"
 
-int	getNumberOfWords(char* chaine, FILE* dico)
-{
-	int cpt = 0;
-
-	while (fgets(chaine, TAILLE_MAX, dico))
-		cpt++;
-
-	rewind(dico);
-	return (cpt);
-}
-
-char	*getMysteryWord(FILE* dico, int max)
-{
-	char*	chaine;
-	int	randomizer = 0;
-
-	chaine = malloc(sizeof(char) * TAILLE_MAX);
-	
-	srand(time(NULL));
-	randomizer = (rand() % max);
-
-	do
-	{
-		fgets(chaine, TAILLE_MAX, dico);
-		randomizer--;
-	}while (randomizer >= 0);
-
-	return (chaine);
-}
-
-char	*setMotMystere()
-{
-	char*	chaine;
-	FILE*	dico = NULL;
-	int	nbRandomWords = 0;
-
-	chaine = malloc(sizeof(char) * TAILLE_MAX);
-
-	dico = fopen("dictionnaire.txt", "r");
-
-	if (dico == NULL)
-	{
-		printf("***********************************************\n");
-		printf("****                ERREUR                 ****\n");
-		printf("****LE DICTIONNNAIRE N'A PAS PU ETRE OUVERT****\n");
-		printf("****         FERMETURE DU PROGRAMME        ****\n");
-		printf("***********************************************\n");
-
-		exit(0);
-	}
-	nbRandomWords = getNumberOfWords(chaine, dico);
-	chaine = getMysteryWord(dico, nbRandomWords);
-
-	fclose(dico);
-
-	return (chaine);
-}
-
 char	lireCaractere()
 {
 	char	caractere = 0;
 
-	printf("____________________________\n\n");
+	printf("    ==================\n");
 	printf("Veuillez rentrer un lettre :  \n");
-	printf("____________________________\n");
+	printf("    ==================\n\n");
 
 	caractere = getchar();
 	caractere = toupper(caractere);
 
-	while (getchar() != '\n') ;
+	while (getchar() != '\n') ; //Sert à vider le buffer de "getchar" .L'appeler directement renverrai un '\n'
 
 	printf("\n");
 	return (caractere);
@@ -91,17 +33,14 @@ int	findCharacter(const char* motMystere, const char playerInput)
 	return (-1);
 }
 
-char	*updatePlayerWord(char* playerWord, const char *motMystere, char playerInput, long *cpt)
+char	*updatePlayerWord(char* playerWord, const char *motMystere, char playerInput)
 {
 	unsigned int	i = 0;
 	
 	while (i < strlen(playerWord))
 	{
 		if (motMystere[i] == playerInput)
-		{
 			playerWord[i] = playerInput;
-			*cpt += 1;
-		}
 		i++;
 	}
 	return (playerWord);
@@ -109,7 +48,7 @@ char	*updatePlayerWord(char* playerWord, const char *motMystere, char playerInpu
 
 char	*initPlayerWord(const char* motMystere)
 {
-	char*	word = NULL;
+	char*	word;
 	int	i = 0;
 	int	len;
 
@@ -126,12 +65,23 @@ char	*initPlayerWord(const char* motMystere)
 	return (word);
 }
 
-int	restartGame()
+int 	playerWordIsIncomplete(char *playerWord)
+{
+	int i = 0;
+
+	while(playerWord[i]) {
+		if (playerWord[i++] == '*')
+			return (1);
+	}
+	return (0);
+}
+
+int		restartGame()
 {
 	int	restart = 1;
 
-	printf("Voulez vous relancer une partie ?\n");
-	printf("Tapez [1] pour relancer ou appuyez sur n'importe quelle touche pour quitter\n");
+	printf("\tVoulez vous relancer une partie ?\n");
+	printf("\tTapez [1] pour relancer ou appuyez sur n'importe quelle touche pour quitter\n");
 
 	restart = getchar();
 
@@ -140,17 +90,17 @@ int	restartGame()
 	if (restart == '1')
 	{
 		printf("\n\n\n\n");
-		printf("---------------\n");
-		printf("NOUVELLE PARTIE\n");
-		printf("---------------\n");
+		printf("\t---------------\n");
+		printf("\tNOUVELLE PARTIE\n");
+		printf("\t---------------\n");
 
 		return (1);
 	}
 	else
 	{
-		printf("------------\n");
-		printf("ARRET DU JEU\n");
-		printf("------------\n");
+		printf("\t------------\n");
+		printf("\tARRET DU JEU\n");
+		printf("\t------------\n");
 
 		return (0);
 	}
@@ -159,81 +109,76 @@ int	restartGame()
 
 void	fonctionMere()
 {
-	char	*motMystere;
+	char	*motMystere = NULL;
 	char	*playerWord	= NULL;
 	char	playerInput	= 0;
-	int	i, vies;
-	long	cpt;
-	int	restart		= 1;
+	int 	vies;
+	int		restart	= 1;
 	char	*alpha;
-	int	index		= 0;
+	int		index, i;
 
 	alpha = malloc(sizeof(char) * 27);
 	alpha[26] = '\0';
 
-	printf("---- JEU DU PENDU ----\n\n");
+	printf("\t---- JEU DU PENDU ----\n\n\n");
 	printf("Bon vous connaissez le but du jeu...\n\n");
 	printf("*****************\n");
 	printf("** C'EST PARTI **\n");
-	printf("*****************\n");
-	do
+	printf("*****************\n\n");
+
+	printf("Ah oui, tu peux rentrer Zéro (0) à tout moment pour quitter.\n\n\n");
+
+	while (restart == 1)
 	{
 		i = 0;
-		while (alpha[i] != 0)
-		{
-			alpha[i] = 0;
-			i++;
+		vies = 10;
+		index = 0;
+
+		while (alpha[index]) {
+			alpha[index++] = '0';
 		}
-		i = 0, vies = 10, cpt = 0;
+		index = 0;
 
 		motMystere = setMotMystere();
-//		printf("Mot mystere = %s\n", motMystere);
-
 		playerWord = initPlayerWord(motMystere);
-		do
+
+		while (vies > 0 && playerWordIsIncomplete(playerWord))
 		{
-			printf("Mot :\n\n%s\n", playerWord);
+			printf("Mot :\n\n%s\n\n", playerWord);
 
 			playerInput = lireCaractere();
-
-			if (strchr(alpha, playerInput) == NULL)
-			{
-				if (strchr(motMystere, playerInput))
-				{
-					alpha[index] = playerInput;
-					index++;
-				}
-				i = findCharacter(motMystere, playerInput);
-				
-				printf("\n\n\n\n\n\n\n\n");	
-				if (i == -1)
-				{
-	
-					vies--;
-	
-					printf("Rate !\n");
-	
-				}
-				else
-				{
-					playerWord = updatePlayerWord(playerWord, motMystere, playerInput, &cpt);
-	
-					printf("Vous avez trouve une lettre !\n");
-				}
-//				printf("Mot :\n%s\n", playerWord);
-	
-				if (vies > 1)
-					printf("--- Il vous reste %d vies ---\n", vies);
-				else if (vies == 1)
-					printf("--- Il vous reste %d vie ---\n", vies);
-				printf("\n");
-	
-//				printf("cpt = %ld\n", cpt);
-//				printf("len = %ld\n", strlen(motMystere) - 1);
+			if (playerInput == '0') {
+				printf("EXIT GAME");
+				exit(0);
 			}
-			else
-				printf("T'as deja rentre cette lettre pd\n");
-		}while (vies > 0 && cpt < strlen(motMystere) - 1);
+
+			if (strchr(alpha, playerInput)) {		//On vérifie que la lettre n'a pas déjà été rentrée (sinon -1 vie)
+				vies -= 1;
+				printf("\tTu as deja rentre cette lettre :(\n");
+			}
+			else if (strchr(motMystere, playerInput)) {			//Si la lettre est bonne (et qu'elle n'a pas été trouvée) on MaJ le playerWord)
+				playerWord = updatePlayerWord(playerWord, motMystere, playerInput);
+				printf("Vous avez trouve une lettre !\n");
+				alpha[index] = playerInput;
+				index++;
+			}
+			else {
+				vies -=1;
+				printf("\tRATE !\n\n");
+				alpha[index] = playerInput;
+				index++;
+			}
+
+			ep_displayPendu(vies);
+	
+			if (vies > 1)
+				printf("\t--- Il vous reste %d vies ---\n", vies);
+			else if (vies == 1)
+				printf("\t--- Il vous reste %d vie ---\n", vies);
+			printf("\n");
+
+			printf("\n\n\n===================================\n|                                 |\n===================================\n\n");
+		}
 
 		if (vies == 0)
 		{
@@ -243,14 +188,18 @@ void	fonctionMere()
 			printf("mais c'est pas grave, tu peux reessayer !\n");
 		}
 		else
-			printf("\nBien ouej, le mot etait bien :\n%s !", motMystere);
+			printf("\nBien ouej, le mot etait bien :\n\t%s !\n", motMystere);
 		restart = restartGame();
-	}while (restart == 1);
+
+		free(playerWord);
+		free(motMystere);
+	}
+	free(alpha);
 }
 
 int	main(int argc, char *argv[])
 {
-	printf("\n\n\n\n\n");
+	printf("\n");
 	fonctionMere();
 
 	return 0;
