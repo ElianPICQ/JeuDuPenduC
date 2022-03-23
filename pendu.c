@@ -5,7 +5,7 @@ char	lireCaractere()
 	char	caractere = 0;
 
 	printf("    ==================\n");
-	printf("Veuillez rentrer un lettre :  \n");
+	printf("Veuillez rentrer une lettre :  \n");
 	printf("    ==================\n\n");
 
 	caractere = getchar();
