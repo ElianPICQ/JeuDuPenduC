@@ -1,7 +1,9 @@
 # JeuDuPenduC
 
--- Presque terminé. Ajouter des détails si j'ai la foi --
+-- Terminé (je crois?) --
 
 Jeu console du pendu réalisé en C.
-Executer le a.out dans un terminal.
-Testé dans un terminal Bash.
+Executer le pendu_exec dans un terminal.
+Ou
+Compiler le programme avec 'make'.
+Puis executer pendu_exec
