@@ -4,9 +4,9 @@ char	lireCaractere()
 {
 	char	caractere = 0;
 
-	printf("    ==================\n");
-	printf("Veuillez rentrer une lettre :  \n");
-	printf("    ==================\n\n");
+	printf("\t\t    ==================\n");
+	printf("\t\tVeuillez rentrer une lettre :  \n");
+	printf("\t\t    ==================\n\n");
 
 	caractere = getchar();
 	caractere = toupper(caractere);
@@ -177,6 +177,7 @@ void	fonctionMere()
 				printf("\t--- Il vous reste %d vie ---\n", vies);
 			printf("\n");
 
+			printf("lettres déjà entrées: %s\n", alpha);
 			printf("\n\n\n===================================\n|                                 |\n===================================\n\n");
 		}
 
