@@ -13,21 +13,21 @@ int	getNumberOfWords(char* chaine, FILE* dico)
 
 char	*getMysteryWord(FILE* dico, int max)
 {
-	char*	chaine;
+	char*	mysteryWord;
 	int	randomizer = 0;
 
-	chaine = malloc(sizeof(char) * TAILLE_MAX);
+	mysteryWord = malloc(sizeof(char) * TAILLE_MAX);
 	
 	srand(time(NULL));
 	randomizer = (rand() % max);
 
 	do
 	{
-		fgets(chaine, TAILLE_MAX, dico);
+		fgets(mysteryWord, TAILLE_MAX, dico);
 		randomizer--;
 	}while (randomizer >= 0);
 
-	return (chaine);
+	return (mysteryWord);
 }
 
 char	*setMotMystere()
@@ -51,6 +51,7 @@ char	*setMotMystere()
 		exit(0);
 	}
 	nbRandomWords = getNumberOfWords(chaine, dico);
+	free(chaine);
 	chaine = getMysteryWord(dico, nbRandomWords);
 
 	fclose(dico);
