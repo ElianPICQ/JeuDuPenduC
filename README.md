@@ -10,4 +10,4 @@ Puis executer pendu_exec
 
 Vous pouvez ajouter les mots de votre choix dans le dictionnaire
 
-Executé depuis un bash Unix, Je ne l'ai pas testé sur un cmd Windows
+Executé depuis un bash Unix.
